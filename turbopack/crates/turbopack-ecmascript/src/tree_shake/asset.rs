@@ -164,6 +164,8 @@ impl EcmascriptModulePartAsset {
 
             return Ok(Vc::upcast(
                 SideEffectsModule {
+                    export_name: *export,
+                    new_name: new_export.clone().map(|v| Vc::cell(v)),
                     module: final_module,
                     side_effects: Vc::cell(side_effects),
                 }
@@ -190,6 +192,8 @@ impl EcmascriptModulePartAsset {
 #[turbo_tasks::value]
 pub(super) struct SideEffectsModule {
     pub module: Vc<Box<dyn EcmascriptChunkPlaceable>>,
+    pub export_name: Vc<RcStr>,
+    pub new_name: Option<Vc<RcStr>>,
     pub side_effects: Vc<SideEffects>,
 }
 
@@ -292,7 +296,6 @@ async fn follow_reexports_with_side_effects(
                 ModulePart::evaluation(),
             ));
         }
-        vdbg!(ignore, current_module.ident().to_string().await?);
 
         // We ignore the side effect of the entry module here, because we need to proceed.
         let result = follow_reexports(
@@ -307,8 +310,6 @@ async fn follow_reexports_with_side_effects(
             export_name,
             ty,
         } = &*result.await?;
-
-        vdbg!(ty, module.ident().to_string().await?);
 
         match ty {
             FoundExportType::SideEffects => {
