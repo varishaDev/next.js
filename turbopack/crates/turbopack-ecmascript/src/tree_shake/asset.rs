@@ -1,5 +1,5 @@
 use anyhow::{Context, Result};
-use turbo_tasks::{vdbg, RcStr, Value, ValueDefault, ValueToString, Vc};
+use turbo_tasks::{vdbg, RcStr, ResolvedVc, Value, ValueDefault, ValueToString, Vc};
 use turbo_tasks_fs::glob::Glob;
 use turbopack_core::{
     asset::{Asset, AssetContent},
@@ -195,8 +195,8 @@ impl Module for SideEffectsModule {
 
         for (i, side_effect) in self.side_effects.await?.iter().enumerate() {
             ident.add_asset(
-                Vc::cell(RcStr::from(format!("side effect {}", i))),
-                side_effect.ident(),
+                ResolvedVc::cell(RcStr::from(format!("side effect {}", i))),
+                side_effect.ident().to_resolved().await?,
             );
         }
 

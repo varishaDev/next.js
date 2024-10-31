@@ -207,6 +207,7 @@ impl EcmascriptChunkItem for SideEffectsModuleChunkItem {
                 },
                 ..Default::default()
             },
+            rewrite_source_path: None,
             placeholder_for_future_extensions: (),
         }
         .cell())
