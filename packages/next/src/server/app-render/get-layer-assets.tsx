@@ -74,6 +74,15 @@ export function getLayerAssets({
 
   const styles = styleTags
     ? styleTags.map((href, index) => {
+        // `Precedence` is an opt-in signal for React to handle resource
+        // loading and deduplication, etc. It's also used as the key to sort
+        // resources so they will be injected in the correct order.
+        // During HMR, it's critical to use different `precedence` values
+        // for different stylesheets, so their order will be kept.
+        // https://github.com/facebook/react/pull/25060
+        const precedence =
+          process.env.NODE_ENV === 'development' ? 'next_' + href : 'next'
+
         // In dev, Safari and Firefox will cache the resource during HMR:
         // - https://github.com/vercel/next.js/issues/5860
         // - https://bugs.webkit.org/show_bug.cgi?id=187726
@@ -84,15 +93,29 @@ export function getLayerAssets({
           href
         )}${getAssetQueryString(ctx, true)}`
 
-        // `Precedence` is an opt-in signal for React to handle resource
-        // loading and deduplication, etc. It's also used as the key to sort
-        // resources so they will be injected in the correct order.
-        // During HMR, it's critical to use different `precedence` values
-        // for different stylesheets, so their order will be kept.
-        // https://github.com/facebook/react/pull/25060
-        const precedence =
-          process.env.NODE_ENV === 'development' ? 'next_' + href : 'next'
+        if (
+          process.env.NEXT_RUNTIME !== 'edge' &&
+          ctx.renderOpts.experimental.inlineCss
+        ) {
+          return (
+            <style
+              key={index}
+              dangerouslySetInnerHTML={{
+                __html: String(
+                  require('fs').readFileSync(
+                    require('path').join(ctx.renderOpts.distDir ?? '', href)
+                  )
+                ),
+              }}
+              nonce={ctx.nonce}
+              // @ts-ignore
+              precedence={precedence}
+              href={href}
+            />
+          )
+        }
 
+        // Note we don't preload styles for inlined CSS
         preloadCallbacks.push(() => {
           ctx.componentMod.preloadStyle(
             fullHref,
@@ -100,6 +123,7 @@ export function getLayerAssets({
             ctx.nonce
           )
         })
+
         return (
           <link
             rel="stylesheet"
