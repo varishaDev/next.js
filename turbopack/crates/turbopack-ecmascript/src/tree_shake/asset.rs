@@ -1,5 +1,5 @@
 use anyhow::{Context, Result};
-use turbo_tasks::{vdbg, RcStr, ResolvedVc, Value, ValueDefault, ValueToString, Vc};
+use turbo_tasks::{RcStr, ResolvedVc, Value, Vc};
 use turbo_tasks_fs::glob::Glob;
 use turbopack_core::{
     asset::{Asset, AssetContent},
