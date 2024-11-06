@@ -52,9 +52,9 @@ impl ModuleReference for CjsAssetReference {
     #[turbo_tasks::function]
     fn resolve_reference(&self) -> Vc<ModuleResolveResult> {
         cjs_resolve(
-            self.origin,
-            self.request,
-            Some(self.issue_source),
+            *self.origin,
+            *self.request,
+            Some(*self.issue_source),
             self.in_try,
         )
     }
