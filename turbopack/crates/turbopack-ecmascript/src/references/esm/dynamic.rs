@@ -64,7 +64,7 @@ impl ModuleReference for EsmAsyncAssetReference {
             self.request,
             Value::new(EcmaScriptModulesReferenceSubType::DynamicImport),
             self.in_try,
-            Some(self.issue_source),
+            Some(*self.issue_source),
         )
     }
 }
