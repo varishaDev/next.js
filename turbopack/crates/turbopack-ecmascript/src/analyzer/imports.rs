@@ -12,7 +12,7 @@ use swc_core::{
         visit::{Visit, VisitWith},
     },
 };
-use turbo_tasks::{FxIndexMap, FxIndexSet, RcStr, ResolvedVc, Vc};
+use turbo_tasks::{FxIndexMap, FxIndexSet, RcStr, Vc};
 use turbopack_core::{issue::IssueSource, source::Source};
 
 use super::{top_level_await::has_top_level_await, JsValue, ModuleValue};
@@ -208,7 +208,7 @@ pub(crate) struct ImportMapReference {
     pub module_path: JsWord,
     pub imported_symbol: ImportedSymbol,
     pub annotations: ImportAnnotations,
-    pub issue_source: Option<ResolvedVc<IssueSource>>,
+    pub issue_source: Option<Vc<IssueSource>>,
 }
 
 impl ImportMap {
@@ -290,7 +290,7 @@ impl ImportMap {
 
 struct Analyzer<'a> {
     data: &'a mut ImportMap,
-    source: Option<ResolvedVc<Box<dyn Source>>>,
+    source: Option<Vc<Box<dyn Source>>>,
     comments: Option<&'a dyn Comments>,
 }
 
