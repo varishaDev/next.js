@@ -65,7 +65,7 @@ impl ManifestAsyncModule {
             if chunk_items
                 .get(
                     this.inner
-                        .as_chunk_item(Vc::upcast(this.chunking_context))
+                        .as_chunk_item(*ResolvedVc::upcast(this.chunking_context))
                         .resolve()
                         .await?,
                 )
