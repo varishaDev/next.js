@@ -453,7 +453,11 @@ impl EsmExports {
                 if !exports.contains_key(export) {
                     exports.insert(
                         export.clone(),
-                        EsmExport::ImportedBinding(Vc::upcast(*esm_ref), export.clone(), false),
+                        EsmExport::ImportedBinding(
+                            ResolvedVc::upcast(*esm_ref),
+                            export.clone(),
+                            false,
+                        ),
                     );
                 }
             }
