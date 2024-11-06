@@ -30,9 +30,9 @@ fn modifier() -> Vc<RcStr> {
 
 #[turbo_tasks::value]
 pub struct WebpackModuleAsset {
-    pub source: Vc<Box<dyn Source>>,
-    pub runtime: Vc<WebpackRuntime>,
-    pub transforms: Vc<EcmascriptInputTransforms>,
+    pub source: ResolvedVc<Box<dyn Source>>,
+    pub runtime: ResolvedVc<WebpackRuntime>,
+    pub transforms: ResolvedVc<EcmascriptInputTransforms>,
 }
 
 #[turbo_tasks::value_impl]
@@ -76,8 +76,8 @@ impl Asset for WebpackModuleAsset {
 pub struct WebpackChunkAssetReference {
     #[turbo_tasks(trace_ignore)]
     pub chunk_id: Lit,
-    pub runtime: Vc<WebpackRuntime>,
-    pub transforms: Vc<EcmascriptInputTransforms>,
+    pub runtime: ResolvedVc<WebpackRuntime>,
+    pub transforms: ResolvedVc<EcmascriptInputTransforms>,
 }
 
 #[turbo_tasks::value_impl]
@@ -126,9 +126,9 @@ impl ValueToString for WebpackChunkAssetReference {
 
 #[turbo_tasks::value(shared)]
 pub struct WebpackEntryAssetReference {
-    pub source: Vc<Box<dyn Source>>,
-    pub runtime: Vc<WebpackRuntime>,
-    pub transforms: Vc<EcmascriptInputTransforms>,
+    pub source: ResolvedVc<Box<dyn Source>>,
+    pub runtime: ResolvedVc<WebpackRuntime>,
+    pub transforms: ResolvedVc<EcmascriptInputTransforms>,
 }
 
 #[turbo_tasks::value_impl]
@@ -154,10 +154,10 @@ impl ValueToString for WebpackEntryAssetReference {
 
 #[turbo_tasks::value(shared)]
 pub struct WebpackRuntimeAssetReference {
-    pub origin: Vc<Box<dyn ResolveOrigin>>,
-    pub request: Vc<Request>,
-    pub runtime: Vc<WebpackRuntime>,
-    pub transforms: Vc<EcmascriptInputTransforms>,
+    pub origin: ResolvedVc<Box<dyn ResolveOrigin>>,
+    pub request: ResolvedVc<Request>,
+    pub runtime: ResolvedVc<WebpackRuntime>,
+    pub transforms: ResolvedVc<EcmascriptInputTransforms>,
 }
 
 #[turbo_tasks::value_impl]

@@ -23,9 +23,9 @@ use crate::{
 #[turbo_tasks::value]
 #[derive(Hash, Debug)]
 pub struct CjsAssetReference {
-    pub origin: Vc<Box<dyn ResolveOrigin>>,
-    pub request: Vc<Request>,
-    pub issue_source: Vc<IssueSource>,
+    pub origin: ResolvedVc<Box<dyn ResolveOrigin>>,
+    pub request: ResolvedVc<Request>,
+    pub issue_source: ResolvedVc<IssueSource>,
     pub in_try: bool,
 }
 
@@ -76,10 +76,10 @@ impl ChunkableModuleReference for CjsAssetReference {}
 #[turbo_tasks::value]
 #[derive(Hash, Debug)]
 pub struct CjsRequireAssetReference {
-    pub origin: Vc<Box<dyn ResolveOrigin>>,
-    pub request: Vc<Request>,
-    pub path: Vc<AstPath>,
-    pub issue_source: Vc<IssueSource>,
+    pub origin: ResolvedVc<Box<dyn ResolveOrigin>>,
+    pub request: ResolvedVc<Request>,
+    pub path: ResolvedVc<AstPath>,
+    pub issue_source: ResolvedVc<IssueSource>,
     pub in_try: bool,
 }
 
@@ -183,10 +183,10 @@ impl CodeGenerateable for CjsRequireAssetReference {
 #[turbo_tasks::value]
 #[derive(Hash, Debug)]
 pub struct CjsRequireResolveAssetReference {
-    pub origin: Vc<Box<dyn ResolveOrigin>>,
-    pub request: Vc<Request>,
-    pub path: Vc<AstPath>,
-    pub issue_source: Vc<IssueSource>,
+    pub origin: ResolvedVc<Box<dyn ResolveOrigin>>,
+    pub request: ResolvedVc<Request>,
+    pub path: ResolvedVc<AstPath>,
+    pub issue_source: ResolvedVc<IssueSource>,
     pub in_try: bool,
 }
 
@@ -294,7 +294,7 @@ impl CodeGenerateable for CjsRequireResolveAssetReference {
 #[turbo_tasks::value(shared)]
 #[derive(Hash, Debug)]
 pub struct CjsRequireCacheAccess {
-    pub path: Vc<AstPath>,
+    pub path: ResolvedVc<AstPath>,
 }
 
 #[turbo_tasks::value_impl]

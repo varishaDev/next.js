@@ -21,8 +21,8 @@ use crate::{
 #[turbo_tasks::value]
 #[derive(Hash, Debug)]
 pub struct EsmModuleIdAssetReference {
-    inner: Vc<EsmAssetReference>,
-    ast_path: Vc<AstPath>,
+    inner: ResolvedVc<EsmAssetReference>,
+    ast_path: ResolvedVc<AstPath>,
 }
 
 #[turbo_tasks::value_impl]

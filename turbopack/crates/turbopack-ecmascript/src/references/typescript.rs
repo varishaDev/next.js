@@ -15,8 +15,8 @@ use crate::typescript::TsConfigModuleAsset;
 #[turbo_tasks::value]
 #[derive(Hash, Clone, Debug)]
 pub struct TsConfigReference {
-    pub tsconfig: Vc<FileSystemPath>,
-    pub origin: Vc<Box<dyn ResolveOrigin>>,
+    pub tsconfig: ResolvedVc<FileSystemPath>,
+    pub origin: ResolvedVc<Box<dyn ResolveOrigin>>,
 }
 
 #[turbo_tasks::value_impl]
@@ -53,7 +53,7 @@ impl ValueToString for TsConfigReference {
 #[turbo_tasks::value]
 #[derive(Hash, Debug)]
 pub struct TsReferencePathAssetReference {
-    pub origin: Vc<Box<dyn ResolveOrigin>>,
+    pub origin: ResolvedVc<Box<dyn ResolveOrigin>>,
     pub path: RcStr,
 }
 
@@ -108,7 +108,7 @@ impl ValueToString for TsReferencePathAssetReference {
 #[turbo_tasks::value]
 #[derive(Hash, Debug)]
 pub struct TsReferenceTypeAssetReference {
-    pub origin: Vc<Box<dyn ResolveOrigin>>,
+    pub origin: ResolvedVc<Box<dyn ResolveOrigin>>,
     pub module: RcStr,
 }
 

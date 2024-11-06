@@ -28,7 +28,7 @@ use turbopack_core::{
 #[derive(Debug, Clone, Hash)]
 pub enum EcmascriptInputTransform {
     CommonJs,
-    Plugin(Vc<TransformPlugin>),
+    Plugin(ResolvedVc<TransformPlugin>),
     PresetEnv(ResolvedVc<Environment>),
     React {
         #[serde(default)]
@@ -36,9 +36,9 @@ pub enum EcmascriptInputTransform {
         #[serde(default)]
         refresh: bool,
         // swc.jsc.transform.react.importSource
-        import_source: Vc<Option<RcStr>>,
+        import_source: ResolvedVc<Option<RcStr>>,
         // swc.jsc.transform.react.runtime,
-        runtime: Vc<Option<RcStr>>,
+        runtime: ResolvedVc<Option<RcStr>>,
     },
     GlobalTypeofs {
         window_value: String,
@@ -114,7 +114,7 @@ pub struct TransformContext<'a> {
     pub file_path_str: &'a str,
     pub file_name_str: &'a str,
     pub file_name_hash: u128,
-    pub file_path: Vc<FileSystemPath>,
+    pub file_path: ResolvedVc<FileSystemPath>,
 }
 
 impl EcmascriptInputTransform {
@@ -304,7 +304,7 @@ pub fn remove_shebang(program: &mut Program) {
 
 #[turbo_tasks::value(shared)]
 pub struct UnsupportedServerActionIssue {
-    pub file_path: Vc<FileSystemPath>,
+    pub file_path: ResolvedVc<FileSystemPath>,
 }
 
 #[turbo_tasks::value_impl]

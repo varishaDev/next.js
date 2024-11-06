@@ -23,8 +23,8 @@ use crate::{
 
 #[turbo_tasks::value(shared)]
 pub struct AsyncLoaderChunkItem {
-    pub module: Vc<AsyncLoaderModule>,
-    pub chunking_context: Vc<Box<dyn ChunkingContext>>,
+    pub module: ResolvedVc<AsyncLoaderModule>,
+    pub chunking_context: ResolvedVc<Box<dyn ChunkingContext>>,
 }
 
 #[turbo_tasks::value_impl]

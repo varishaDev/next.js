@@ -190,12 +190,12 @@ fn modifier() -> Vc<RcStr> {
 
 #[derive(Clone)]
 pub struct EcmascriptModuleAssetBuilder {
-    source: Vc<Box<dyn Source>>,
-    asset_context: Vc<Box<dyn AssetContext>>,
+    source: ResolvedVc<Box<dyn Source>>,
+    asset_context: ResolvedVc<Box<dyn AssetContext>>,
     ty: EcmascriptModuleAssetType,
-    transforms: Vc<EcmascriptInputTransforms>,
-    options: Vc<EcmascriptOptions>,
-    compile_time_info: Vc<CompileTimeInfo>,
+    transforms: ResolvedVc<EcmascriptInputTransforms>,
+    options: ResolvedVc<EcmascriptOptions>,
+    compile_time_info: ResolvedVc<CompileTimeInfo>,
     inner_assets: Option<ResolvedVc<InnerAssets>>,
 }
 
@@ -236,12 +236,12 @@ impl EcmascriptModuleAssetBuilder {
 
 #[turbo_tasks::value]
 pub struct EcmascriptModuleAsset {
-    pub source: Vc<Box<dyn Source>>,
-    pub asset_context: Vc<Box<dyn AssetContext>>,
+    pub source: ResolvedVc<Box<dyn Source>>,
+    pub asset_context: ResolvedVc<Box<dyn AssetContext>>,
     pub ty: EcmascriptModuleAssetType,
-    pub transforms: Vc<EcmascriptInputTransforms>,
-    pub options: Vc<EcmascriptOptions>,
-    pub compile_time_info: Vc<CompileTimeInfo>,
+    pub transforms: ResolvedVc<EcmascriptInputTransforms>,
+    pub options: ResolvedVc<EcmascriptOptions>,
+    pub compile_time_info: ResolvedVc<CompileTimeInfo>,
     pub inner_assets: Option<ResolvedVc<InnerAssets>>,
     #[turbo_tasks(debug_ignore)]
     last_successful_parse: turbo_tasks::TransientState<ReadRef<ParseResult>>,
@@ -614,8 +614,8 @@ impl ResolveOrigin for EcmascriptModuleAsset {
 
 #[turbo_tasks::value]
 struct ModuleChunkItem {
-    module: Vc<EcmascriptModuleAsset>,
-    chunking_context: Vc<Box<dyn ChunkingContext>>,
+    module: ResolvedVc<EcmascriptModuleAsset>,
+    chunking_context: ResolvedVc<Box<dyn ChunkingContext>>,
 }
 
 #[turbo_tasks::value_impl]
@@ -703,7 +703,7 @@ impl EcmascriptChunkItem for ModuleChunkItem {
 #[turbo_tasks::value]
 pub struct EcmascriptModuleContent {
     pub inner_code: Rope,
-    pub source_map: Option<Vc<Box<dyn GenerateSourceMap>>>,
+    pub source_map: Option<ResolvedVc<Box<dyn GenerateSourceMap>>>,
     pub is_esm: bool,
     // pub refresh: bool,
 }
