@@ -192,7 +192,7 @@ impl ModuleReference for EsmAssetReference {
                 for &module in result.primary_modules().await? {
                     if let Some(module) = ResolvedVc::try_downcast(module).await? {
                         let export = export_name.await?;
-                        if is_export_missing(*module, export.clone_value()).await? {
+                        if *is_export_missing(*module, export.clone_value()).await? {
                             InvalidExport {
                                 export: export_name,
                                 module,
