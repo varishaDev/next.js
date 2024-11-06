@@ -25,7 +25,7 @@ use swc_core::{
         atoms::{Atom, JsWord},
     },
 };
-use turbo_tasks::{FxIndexMap, FxIndexSet, RcStr, Vc};
+use turbo_tasks::{FxIndexMap, FxIndexSet, RcStr, ResolvedVc, Vc};
 use turbopack_core::compile_time_info::{
     CompileTimeDefineValue, DefineableNameSegment, FreeVarReference,
 };

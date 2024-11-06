@@ -13,7 +13,7 @@ use swc_core::{
         },
     },
 };
-use turbo_tasks::{trace::TraceRawVcs, RcStr, TaskInput, Vc};
+use turbo_tasks::{trace::TraceRawVcs, RcStr, ResolvedVc, TaskInput, Vc};
 use turbopack_core::chunk::ChunkingContext;
 
 use super::EsmAssetReference;
