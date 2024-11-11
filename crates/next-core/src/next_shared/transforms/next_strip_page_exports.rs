@@ -4,7 +4,7 @@ use next_custom_transforms::transforms::strip_page_exports::{
     next_transform_strip_page_exports, ExportFilter,
 };
 use swc_core::ecma::ast::Program;
-use turbo_tasks::Vc;
+use turbo_tasks::{ResolvedVc, Vc};
 use turbo_tasks_fs::FileSystemPath;
 use turbopack::module_options::{ModuleRule, ModuleRuleEffect, RuleCondition};
 use turbopack_ecmascript::{CustomTransformer, EcmascriptInputTransform, TransformContext};
@@ -18,9 +18,10 @@ pub async fn get_next_pages_transforms_rule(
     enable_mdx_rs: bool,
 ) -> Result<ModuleRule> {
     // Apply the Next SSG transform to all pages.
-    let strip_transform = EcmascriptInputTransform::Plugin(Vc::cell(Box::new(
-        NextJsStripPageExports { export_filter },
-    ) as _));
+    let strip_transform =
+        EcmascriptInputTransform::Plugin(ResolvedVc::cell(Box::new(NextJsStripPageExports {
+            export_filter,
+        }) as _));
     Ok(ModuleRule::new(
         RuleCondition::all(vec![
             RuleCondition::all(vec![
