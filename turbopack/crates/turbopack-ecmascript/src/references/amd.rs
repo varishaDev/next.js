@@ -109,7 +109,7 @@ pub struct AmdDefineWithDependenciesCodeGen {
     origin: ResolvedVc<Box<dyn ResolveOrigin>>,
     path: ResolvedVc<AstPath>,
     factory_type: AmdDefineFactoryType,
-    issue_source: ResolvedVc<IssueSource>,
+    issue_source: Vc<IssueSource>,
     in_try: bool,
 }
 
@@ -119,7 +119,7 @@ impl AmdDefineWithDependenciesCodeGen {
         origin: ResolvedVc<Box<dyn ResolveOrigin>>,
         path: ResolvedVc<AstPath>,
         factory_type: AmdDefineFactoryType,
-        issue_source: ResolvedVc<IssueSource>,
+        issue_source: Vc<IssueSource>,
         in_try: bool,
     ) -> Vc<Self> {
         Self::cell(AmdDefineWithDependenciesCodeGen {
