@@ -195,9 +195,9 @@ impl AnalyzeEcmascriptModuleResultBuilder {
     where
         R: Upcast<Box<dyn ModuleReference>>,
     {
-        let r = ResolvedVc::upcast(reference);
+        let r = Vc::upcast(reference);
         self.references.insert(r);
-        self.local_references.insert(ResolvedVc::upcast(reference));
+        self.local_references.insert(r);
     }
 
     /// Adds an asset reference to the analysis result.
@@ -205,7 +205,7 @@ impl AnalyzeEcmascriptModuleResultBuilder {
     where
         R: Upcast<Box<dyn ModuleReference>>,
     {
-        self.references.insert(ResolvedVc::upcast(reference));
+        self.references.insert(Vc::upcast(reference));
     }
 
     /// Adds an reexport reference to the analysis result.
@@ -213,7 +213,7 @@ impl AnalyzeEcmascriptModuleResultBuilder {
     where
         R: Upcast<Box<dyn ModuleReference>>,
     {
-        self.local_references.insert(ResolvedVc::upcast(reference));
+        self.local_references.insert(Vc::upcast(reference));
     }
 
     /// Adds an reexport reference to the analysis result.
@@ -221,14 +221,12 @@ impl AnalyzeEcmascriptModuleResultBuilder {
     where
         R: Upcast<Box<dyn ModuleReference>>,
     {
-        self.reexport_references
-            .insert(ResolvedVc::upcast(reference));
+        self.reexport_references.insert(Vc::upcast(reference));
     }
 
     /// Adds an evaluation reference to the analysis result.
     pub fn add_evaluation_reference(&mut self, reference: Vc<EsmAssetReference>) {
-        self.evaluation_references
-            .insert(ResolvedVc::upcast(reference));
+        self.evaluation_references.insert(Vc::upcast(reference));
     }
 
     /// Adds a codegen to the analysis result.
@@ -237,7 +235,7 @@ impl AnalyzeEcmascriptModuleResultBuilder {
         C: Upcast<Box<dyn CodeGenerateable>>,
     {
         self.code_gens
-            .push(CodeGen::CodeGenerateable(ResolvedVc::upcast(code_gen)));
+            .push(CodeGen::CodeGenerateable(Vc::upcast(code_gen)));
     }
 
     /// Adds a codegen to the analysis result.
@@ -247,9 +245,9 @@ impl AnalyzeEcmascriptModuleResultBuilder {
         C: Upcast<Box<dyn CodeGenerateableWithAsyncModuleInfo>>,
     {
         self.code_gens
-            .push(CodeGen::CodeGenerateableWithAsyncModuleInfo(
-                ResolvedVc::upcast(code_gen),
-            ));
+            .push(CodeGen::CodeGenerateableWithAsyncModuleInfo(Vc::upcast(
+                code_gen,
+            )));
     }
 
     pub fn add_binding(&mut self, binding: EsmBinding) {
