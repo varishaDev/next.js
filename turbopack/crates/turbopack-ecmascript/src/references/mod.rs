@@ -2376,18 +2376,22 @@ async fn analyze_amd_define(
             );
         }
         [JsValue::Constant(id), JsValue::Function(..)] if id.as_str().is_some() => {
-            analysis.add_code_gen(AmdDefineWithDependenciesCodeGen::new(
-                vec![
-                    AmdDefineDependencyElement::Require,
-                    AmdDefineDependencyElement::Exports,
-                    AmdDefineDependencyElement::Module,
-                ],
-                origin,
-                Vc::cell(ast_path.to_vec()),
-                AmdDefineFactoryType::Function,
-                issue_source(source, span),
-                in_try,
-            ));
+            analysis.add_code_gen(
+                AmdDefineWithDependenciesCodeGen::new(
+                    vec![
+                        AmdDefineDependencyElement::Require,
+                        AmdDefineDependencyElement::Exports,
+                        AmdDefineDependencyElement::Module,
+                    ],
+                    *origin,
+                    ResolvedVc::cell(ast_path.to_vec()),
+                    AmdDefineFactoryType::Function,
+                    issue_source(source, span),
+                    in_try,
+                )
+                .to_resolved()
+                .await?,
+            );
         }
         [JsValue::Constant(id), _] if id.as_str().is_some() => {
             analysis.add_code_gen(
@@ -2397,8 +2401,8 @@ async fn analyze_amd_define(
                         AmdDefineDependencyElement::Exports,
                         AmdDefineDependencyElement::Module,
                     ],
-                    origin,
-                    Vc::cell(ast_path.to_vec()),
+                    *origin,
+                    ResolvedVc::cell(ast_path.to_vec()),
                     AmdDefineFactoryType::Unknown,
                     issue_source(source, span),
                     in_try,
@@ -2415,8 +2419,8 @@ async fn analyze_amd_define(
                         AmdDefineDependencyElement::Exports,
                         AmdDefineDependencyElement::Module,
                     ],
-                    origin,
-                    Vc::cell(ast_path.to_vec()),
+                    *origin,
+                    ResolvedVc::cell(ast_path.to_vec()),
                     AmdDefineFactoryType::Function,
                     issue_source(source, span),
                     in_try,
@@ -2429,8 +2433,8 @@ async fn analyze_amd_define(
             analysis.add_code_gen(
                 AmdDefineWithDependenciesCodeGen::new(
                     vec![],
-                    origin,
-                    Vc::cell(ast_path.to_vec()),
+                    *origin,
+                    ResolvedVc::cell(ast_path.to_vec()),
                     AmdDefineFactoryType::Value,
                     issue_source(source, span),
                     in_try,
@@ -2447,8 +2451,8 @@ async fn analyze_amd_define(
                         AmdDefineDependencyElement::Exports,
                         AmdDefineDependencyElement::Module,
                     ],
-                    origin,
-                    Vc::cell(ast_path.to_vec()),
+                    *origin,
+                    ResolvedVc::cell(ast_path.to_vec()),
                     AmdDefineFactoryType::Unknown,
                     issue_source(source, span),
                     in_try,
