@@ -1941,8 +1941,11 @@ async fn handle_call<G: Fn(Vec<Effect>) + Send + Sync>(
                     .link_value(args[0].clone(), ImportAttributes::empty_ref())
                     .await?;
                 if let Some(s) = first_arg.as_str() {
-                    analysis
-                        .add_reference(NodeBindingsReference::new(origin.origin_path(), s.into()));
+                    analysis.add_reference(
+                        NodeBindingsReference::new(origin.origin_path(), s.into())
+                            .to_resolved()
+                            .await?,
+                    );
                     return Ok(());
                 }
             }
@@ -2057,7 +2060,11 @@ async fn handle_call<G: Fn(Vec<Effect>) + Send + Sync>(
                         .await?;
                     js_value_to_pattern(&linked_func_call)
                 };
-                analysis.add_reference(DirAssetReference::new(source, Pattern::new(abs_pattern)));
+                analysis.add_reference(
+                    DirAssetReference::new(source, Pattern::new(abs_pattern))
+                        .to_resolved()
+                        .await?,
+                );
                 return Ok(());
             }
             let (args, hints) = explain_args(&args);
