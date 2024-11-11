@@ -135,14 +135,12 @@ pub struct WebpackEntryAssetReference {
 impl ModuleReference for WebpackEntryAssetReference {
     #[turbo_tasks::function]
     async fn resolve_reference(&self) -> Result<Vc<ModuleResolveResult>> {
-        Ok(
-            ModuleResolveResult::module(ResolvedVc::upcast(WebpackModuleAsset::new(
-                *self.source,
-                *self.runtime,
-                *self.transforms,
-            )))
-            .cell(),
-        )
+        Ok(ModuleResolveResult::module(ResolvedVc::upcast(
+            WebpackModuleAsset::new(*self.source, *self.runtime, *self.transforms)
+                .to_resolved()
+                .await?,
+        ))
+        .cell())
     }
 }
 
@@ -182,7 +180,7 @@ impl ModuleReference for WebpackRuntimeAssetReference {
             .await?
             .map_module(|source| async move {
                 Ok(ModuleResolveResultItem::Module(ResolvedVc::upcast(
-                    WebpackModuleAsset::new(*source, self.runtime, self.transforms)
+                    WebpackModuleAsset::new(*source, *self.runtime, *self.transforms)
                         .to_resolved()
                         .await?,
                 )))
