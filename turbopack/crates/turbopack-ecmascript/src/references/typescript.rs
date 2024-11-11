@@ -118,7 +118,7 @@ pub struct TsReferenceTypeAssetReference {
 #[turbo_tasks::value_impl]
 impl TsReferenceTypeAssetReference {
     #[turbo_tasks::function]
-    pub fn new(origin: Vc<Box<dyn ResolveOrigin>>, module: RcStr) -> Vc<Self> {
+    pub fn new(origin: ResolvedVc<Box<dyn ResolveOrigin>>, module: RcStr) -> Vc<Self> {
         Self::cell(TsReferenceTypeAssetReference { origin, module })
     }
 }
@@ -128,7 +128,7 @@ impl ModuleReference for TsReferenceTypeAssetReference {
     #[turbo_tasks::function]
     fn resolve_reference(&self) -> Vc<ModuleResolveResult> {
         type_resolve(
-            self.origin,
+            *self.origin,
             Request::module(
                 self.module.clone(),
                 Value::new(RcStr::default().into()),
