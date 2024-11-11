@@ -2461,6 +2461,8 @@ async fn analyze_amd_define(
             );
         }
     }
+
+    Ok(())
 }
 
 fn analyze_amd_define_with_deps(
