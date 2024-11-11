@@ -444,21 +444,13 @@ pub(crate) async fn analyse_ecmascript_module_internal(
     } = *module.determine_module_type().await?;
 
     if let Some(package_json) = referenced_package_json {
-        analysis.add_reference(
-            PackageJsonReference::new(*package_json)
-                .to_resolved()
-                .await?,
-        );
+        analysis.add_reference(PackageJsonReference::new(*package_json));
     }
 
     if analyze_types {
         match &*find_context_file(path.parent(), tsconfig()).await? {
             FindContextFileResult::Found(tsconfig, _) => {
-                analysis.add_reference(
-                    TsConfigReference::new(origin, **tsconfig)
-                        .to_resolved()
-                        .await?,
-                );
+                analysis.add_reference(TsConfigReference::new(origin, **tsconfig));
             }
             FindContextFileResult::NotFound(_) => {}
         };
@@ -544,7 +536,7 @@ pub(crate) async fn analyse_ecmascript_module_internal(
         if path.ends_with(".map") {
             let source_map_origin = origin_path.parent().join(path.into());
             let reference = SourceMapReference::new(origin_path, source_map_origin);
-            analysis.add_reference(reference.to_resolved().await?);
+            analysis.add_reference(reference);
             let source_map = reference.generate_source_map();
             analysis.set_source_map(
                 convert_to_turbopack_source_map(source_map, source_map_origin)
@@ -630,7 +622,7 @@ pub(crate) async fn analyse_ecmascript_module_internal(
             import_externals,
         );
 
-        import_references.push(r.to_resolved().await?);
+        import_references.push(r);
     }
 
     for i in evaluation_references {
@@ -887,11 +879,9 @@ pub(crate) async fn analyse_ecmascript_module_internal(
 
         match effect {
             Effect::Unreachable { start_ast_path } => {
-                analysis.add_code_gen(
-                    Unreachable::new(AstPathRange::StartAfter(start_ast_path.to_vec()).cell())
-                        .to_resolved()
-                        .await?,
-                );
+                analysis.add_code_gen(Unreachable::new(
+                    AstPathRange::StartAfter(start_ast_path.to_vec()).cell(),
+                ));
             }
             Effect::Conditional {
                 condition,
@@ -906,23 +896,15 @@ pub(crate) async fn analyse_ecmascript_module_internal(
 
                 macro_rules! inactive {
                     ($block:ident) => {
-                        analysis.add_code_gen(
-                            Unreachable::new($block.range.clone().cell())
-                                .to_resolved()
-                                .await?,
-                        );
+                        analysis.add_code_gen(Unreachable::new($block.range.clone().cell()));
                     };
                 }
                 macro_rules! condition {
                     ($expr:expr) => {
-                        analysis.add_code_gen(
-                            ConstantCondition::new(
-                                Value::new($expr),
-                                Vc::cell(condition_ast_path.to_vec()),
-                            )
-                            .to_resolved()
-                            .await?,
-                        );
+                        analysis.add_code_gen(ConstantCondition::new(
+                            Value::new($expr),
+                            Vc::cell(condition_ast_path.to_vec()),
+                        ));
                     };
                 }
                 macro_rules! active {
