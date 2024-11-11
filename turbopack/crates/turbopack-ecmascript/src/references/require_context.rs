@@ -217,7 +217,7 @@ pub struct RequireContextAssetReference {
 #[turbo_tasks::value_impl]
 impl RequireContextAssetReference {
     #[turbo_tasks::function]
-    pub fn new(
+    pub async fn new(
         source: ResolvedVc<Box<dyn Source>>,
         origin: ResolvedVc<Box<dyn ResolveOrigin>>,
         dir: RcStr,
@@ -226,7 +226,7 @@ impl RequireContextAssetReference {
         path: ResolvedVc<AstPath>,
         issue_source: Option<ResolvedVc<IssueSource>>,
         in_try: bool,
-    ) -> Vc<Self> {
+    ) -> Result<Vc<Self>> {
         let map = RequireContextMap::generate(
             origin,
             origin.origin_path().parent().join(dir.clone()),
@@ -234,7 +234,9 @@ impl RequireContextAssetReference {
             filter,
             issue_source,
             in_try,
-        );
+        )
+        .to_resolved()
+        .await?;
         let inner = RequireContextAsset {
             source,
             origin,
@@ -315,7 +317,7 @@ pub struct ResolvedModuleReference(ResolvedVc<ModuleResolveResult>);
 impl ModuleReference for ResolvedModuleReference {
     #[turbo_tasks::function]
     fn resolve_reference(&self) -> Vc<ModuleResolveResult> {
-        self.0
+        *self.0
     }
 }
 
