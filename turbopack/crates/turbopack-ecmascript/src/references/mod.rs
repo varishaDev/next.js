@@ -503,18 +503,14 @@ pub(crate) async fn analyse_ecmascript_module_internal(
                     let text = &comment.text;
                     if let Some(m) = REFERENCE_PATH.captures(text) {
                         let path = &m[1];
-                        analysis.add_reference(
-                            TsReferencePathAssetReference::new(origin, path.into())
-                                .to_resolved()
-                                .await?,
-                        );
+                        analysis
+                            .add_reference(TsReferencePathAssetReference::new(origin, path.into()));
                     } else if let Some(m) = REFERENCE_TYPES.captures(text) {
                         let types = &m[1];
-                        analysis.add_reference(
-                            TsReferenceTypeAssetReference::new(origin, types.into())
-                                .to_resolved()
-                                .await?,
-                        );
+                        analysis.add_reference(TsReferenceTypeAssetReference::new(
+                            origin,
+                            types.into(),
+                        ));
                     }
                 }
             }
@@ -728,7 +724,7 @@ pub(crate) async fn analyse_ecmascript_module_internal(
                     runtime,
                     transforms,
                 }
-                .resolved_cell(),
+                .cell(),
             );
 
             if webpack_entry {
@@ -738,7 +734,7 @@ pub(crate) async fn analyse_ecmascript_module_internal(
                         runtime,
                         transforms,
                     }
-                    .resolved_cell(),
+                    .cell(),
                 );
             }
 
