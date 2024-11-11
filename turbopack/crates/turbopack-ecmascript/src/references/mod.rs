@@ -1444,7 +1444,7 @@ async fn handle_call<G: Fn(Vec<Effect>) + Send + Sync>(
                     }
                 }
                 analysis.add_reference(EsmAsyncAssetReference::new(
-                    *origin,
+                    origin,
                     Request::parse(Value::new(pat)),
                     Vc::cell(ast_path.to_vec()),
                     issue_source(*source, span),
@@ -1481,7 +1481,7 @@ async fn handle_call<G: Fn(Vec<Effect>) + Send + Sync>(
                     }
                 }
                 analysis.add_reference(CjsRequireAssetReference::new(
-                    *origin,
+                    origin,
                     Request::parse(Value::new(pat)),
                     Vc::cell(ast_path.to_vec()),
                     issue_source(*source, span),
@@ -1529,7 +1529,7 @@ async fn handle_call<G: Fn(Vec<Effect>) + Send + Sync>(
                     }
                 }
                 analysis.add_reference(CjsRequireResolveAssetReference::new(
-                    *origin,
+                    origin,
                     Request::parse(Value::new(pat)),
                     Vc::cell(ast_path.to_vec()),
                     issue_source(*source, span),
@@ -1569,7 +1569,7 @@ async fn handle_call<G: Fn(Vec<Effect>) + Send + Sync>(
 
             analysis.add_reference(RequireContextAssetReference::new(
                 *source,
-                *origin,
+                origin,
                 options.dir,
                 options.include_subdirs,
                 Vc::cell(options.filter),
@@ -1754,7 +1754,7 @@ async fn handle_call<G: Fn(Vec<Effect>) + Send + Sync>(
                     }
                 }
                 analysis.add_reference(CjsAssetReference::new(
-                    *origin,
+                    origin,
                     Request::parse(Value::new(pat)),
                     issue_source(*source, span),
                     in_try,
@@ -1849,11 +1849,8 @@ async fn handle_call<G: Fn(Vec<Effect>) + Send + Sync>(
                     .link_value(args[0].clone(), ImportAttributes::empty_ref())
                     .await?;
                 if let Some(s) = first_arg.as_str() {
-                    analysis.add_reference(
-                        NodeBindingsReference::new(origin.origin_path(), s.into())
-                            .to_resolved()
-                            .await?,
-                    );
+                    analysis
+                        .add_reference(NodeBindingsReference::new(origin.origin_path(), s.into()));
                     return Ok(());
                 }
             }
@@ -1982,7 +1979,7 @@ async fn handle_call<G: Fn(Vec<Effect>) + Send + Sync>(
             let args = linked_args(args).await?;
             if args.len() == 2 && args.get(1).and_then(|arg| arg.as_str()).is_some() {
                 analysis.add_reference(CjsAssetReference::new(
-                    *origin,
+                    origin,
                     Request::parse(Value::new(js_value_to_pattern(&args[1]))),
                     issue_source(*source, span),
                     in_try,
@@ -2406,7 +2403,7 @@ async fn analyze_amd_define_with_deps(
     analysis.add_code_gen(AmdDefineWithDependenciesCodeGen::new(
         requests,
         origin,
-        Vc::cell(ast_path.to_vec()),
+        ResolvedVc::cell(ast_path.to_vec()),
         AmdDefineFactoryType::Function,
         issue_source(source, span),
         in_try,
