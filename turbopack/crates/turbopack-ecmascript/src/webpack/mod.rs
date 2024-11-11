@@ -155,9 +155,9 @@ impl ValueToString for WebpackEntryAssetReference {
 #[turbo_tasks::value(shared)]
 pub struct WebpackRuntimeAssetReference {
     pub origin: ResolvedVc<Box<dyn ResolveOrigin>>,
-    pub request: ResolvedVc<Request>,
-    pub runtime: ResolvedVc<WebpackRuntime>,
-    pub transforms: ResolvedVc<EcmascriptInputTransforms>,
+    pub request: Vc<Request>,
+    pub runtime: Vc<WebpackRuntime>,
+    pub transforms: Vc<EcmascriptInputTransforms>,
 }
 
 #[turbo_tasks::value_impl]
@@ -172,7 +172,7 @@ impl ModuleReference for WebpackRuntimeAssetReference {
         let resolved = resolve(
             self.origin.origin_path().parent().resolve().await?,
             Value::new(ReferenceType::CommonJs(CommonJsReferenceSubType::Undefined)),
-            *self.request,
+            self.request,
             options,
         );
 
@@ -180,7 +180,7 @@ impl ModuleReference for WebpackRuntimeAssetReference {
             .await?
             .map_module(|source| async move {
                 Ok(ModuleResolveResultItem::Module(ResolvedVc::upcast(
-                    WebpackModuleAsset::new(*source, *self.runtime, *self.transforms)
+                    WebpackModuleAsset::new(source, self.runtime, self.transforms)
                         .to_resolved()
                         .await?,
                 )))
