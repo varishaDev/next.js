@@ -150,7 +150,7 @@ impl ModuleReference for DirAssetReference {
         let parent_path = self.source.ident().path().parent();
         Ok(resolve_reference_from_dir(
             parent_path.resolve().await?,
-            self.path,
+            *self.path,
         ))
     }
 }
