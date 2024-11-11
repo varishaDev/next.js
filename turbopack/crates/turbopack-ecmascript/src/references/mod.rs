@@ -2349,7 +2349,7 @@ fn issue_source(source: Vc<Box<dyn Source>>, span: Span) -> Vc<IssueSource> {
 async fn analyze_amd_define(
     source: Vc<Box<dyn Source>>,
     analysis: &mut AnalyzeEcmascriptModuleResultBuilder,
-    origin: Vc<Box<dyn ResolveOrigin>>,
+    origin: ResolvedVc<Box<dyn ResolveOrigin>>,
     handler: &Handler,
     span: Span,
     ast_path: &[AstParentKind],
@@ -2368,12 +2368,14 @@ async fn analyze_amd_define(
                 id.as_str(),
                 deps,
                 in_try,
-            );
+            )
+            .await?;
         }
         [JsValue::Array { items: deps, .. }, _] => {
             analyze_amd_define_with_deps(
                 source, analysis, origin, handler, span, ast_path, None, deps, in_try,
-            );
+            )
+            .await?;
         }
         [JsValue::Constant(id), JsValue::Function(..)] if id.as_str().is_some() => {
             analysis.add_code_gen(
@@ -2451,7 +2453,7 @@ async fn analyze_amd_define(
                         AmdDefineDependencyElement::Exports,
                         AmdDefineDependencyElement::Module,
                     ],
-                    *origin,
+                    origin,
                     ResolvedVc::cell(ast_path.to_vec()),
                     AmdDefineFactoryType::Unknown,
                     issue_source(source, span).to_resolved().await?,
@@ -2473,17 +2475,17 @@ async fn analyze_amd_define(
     Ok(())
 }
 
-fn analyze_amd_define_with_deps(
+async fn analyze_amd_define_with_deps(
     source: Vc<Box<dyn Source>>,
     analysis: &mut AnalyzeEcmascriptModuleResultBuilder,
-    origin: Vc<Box<dyn ResolveOrigin>>,
+    origin: ResolvedVc<Box<dyn ResolveOrigin>>,
     handler: &Handler,
     span: Span,
     ast_path: &[AstParentKind],
     id: Option<&str>,
     deps: &[JsValue],
     in_try: bool,
-) {
+) -> Result<()> {
     let mut requests = Vec::new();
     for dep in deps {
         if let Some(dep) = dep.as_str() {
@@ -2505,7 +2507,7 @@ fn analyze_amd_define_with_deps(
                     requests.push(AmdDefineDependencyElement::Module);
                 }
                 _ => {
-                    let request = Request::parse_string(dep.into());
+                    let request = Request::parse_string(dep.into()).to_resolved().await?;
                     let reference = AmdDefineAssetReference::new(
                         origin,
                         request,
@@ -2538,14 +2540,20 @@ fn analyze_amd_define_with_deps(
         );
     }
 
-    analysis.add_code_gen(AmdDefineWithDependenciesCodeGen::new(
-        requests,
-        origin,
-        Vc::cell(ast_path.to_vec()),
-        AmdDefineFactoryType::Function,
-        issue_source(source, span),
-        in_try,
-    ));
+    analysis.add_code_gen(
+        AmdDefineWithDependenciesCodeGen::new(
+            requests,
+            origin,
+            Vc::cell(ast_path.to_vec()),
+            AmdDefineFactoryType::Function,
+            issue_source(source, span),
+            in_try,
+        )
+        .to_resolved()
+        .await?,
+    );
+
+    Ok(())
 }
 
 /// Used to generate the "root" path to a __filename/__dirname/import.meta.url
