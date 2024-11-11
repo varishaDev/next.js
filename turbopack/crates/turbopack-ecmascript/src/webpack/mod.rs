@@ -127,7 +127,7 @@ impl ValueToString for WebpackChunkAssetReference {
 #[turbo_tasks::value(shared)]
 pub struct WebpackEntryAssetReference {
     pub source: ResolvedVc<Box<dyn Source>>,
-    pub runtime: ResolvedVc<WebpackRuntime>,
+    pub runtime: Vc<WebpackRuntime>,
     pub transforms: ResolvedVc<EcmascriptInputTransforms>,
 }
 
@@ -136,7 +136,7 @@ impl ModuleReference for WebpackEntryAssetReference {
     #[turbo_tasks::function]
     async fn resolve_reference(&self) -> Result<Vc<ModuleResolveResult>> {
         Ok(ModuleResolveResult::module(ResolvedVc::upcast(
-            WebpackModuleAsset::new(*self.source, *self.runtime, *self.transforms)
+            WebpackModuleAsset::new(*self.source, self.runtime, *self.transforms)
                 .to_resolved()
                 .await?,
         ))
