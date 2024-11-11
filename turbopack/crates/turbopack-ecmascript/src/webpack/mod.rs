@@ -174,7 +174,7 @@ impl ModuleReference for WebpackRuntimeAssetReference {
         let resolved = resolve(
             self.origin.origin_path().parent().resolve().await?,
             Value::new(ReferenceType::CommonJs(CommonJsReferenceSubType::Undefined)),
-            self.request,
+            *self.request,
             options,
         );
 
@@ -182,7 +182,9 @@ impl ModuleReference for WebpackRuntimeAssetReference {
             .await?
             .map_module(|source| async move {
                 Ok(ModuleResolveResultItem::Module(ResolvedVc::upcast(
-                    WebpackModuleAsset::new(*source, self.runtime, self.transforms),
+                    WebpackModuleAsset::new(*source, self.runtime, self.transforms)
+                        .to_resolved()
+                        .await?,
                 )))
             })
             .await?
