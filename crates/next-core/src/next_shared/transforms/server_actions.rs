@@ -2,7 +2,7 @@ use anyhow::Result;
 use async_trait::async_trait;
 use next_custom_transforms::transforms::server_actions::{server_actions, Config};
 use swc_core::{common::FileName, ecma::ast::Program};
-use turbo_tasks::Vc;
+use turbo_tasks::{ResolvedVc, Vc};
 use turbopack::module_options::{ModuleRule, ModuleRuleEffect};
 use turbopack_ecmascript::{CustomTransformer, EcmascriptInputTransform, TransformContext};
 
@@ -19,8 +19,9 @@ pub fn get_server_actions_transform_rule(
     transform: ActionsTransform,
     enable_mdx_rs: bool,
 ) -> ModuleRule {
-    let transformer =
-        EcmascriptInputTransform::Plugin(Vc::cell(Box::new(NextServerActions { transform }) as _));
+    let transformer = EcmascriptInputTransform::Plugin(ResolvedVc::cell(Box::new(
+        NextServerActions { transform },
+    ) as _));
     ModuleRule::new(
         module_rule_match_js_no_url(enable_mdx_rs),
         vec![ModuleRuleEffect::ExtendEcmascriptTransforms {
