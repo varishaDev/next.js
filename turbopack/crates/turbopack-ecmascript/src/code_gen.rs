@@ -3,7 +3,7 @@ use swc_core::ecma::{
     ast::Stmt,
     visit::{AstParentKind, VisitMut},
 };
-use turbo_tasks::{debug::ValueDebugFormat, trace::TraceRawVcs, RcStr, ResolvedVc, Vc};
+use turbo_tasks::{debug::ValueDebugFormat, trace::TraceRawVcs, RcStr, Vc};
 use turbopack_core::chunk::{AsyncModuleInfo, ChunkingContext};
 
 /// impl of code generation inferred from a ModuleReference.
@@ -107,8 +107,8 @@ pub trait CodeGenerateableWithAsyncModuleInfo {
 
 #[derive(Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TraceRawVcs, ValueDebugFormat)]
 pub enum CodeGen {
-    CodeGenerateable(ResolvedVc<Box<dyn CodeGenerateable>>),
-    CodeGenerateableWithAsyncModuleInfo(ResolvedVc<Box<dyn CodeGenerateableWithAsyncModuleInfo>>),
+    CodeGenerateable(Vc<Box<dyn CodeGenerateable>>),
+    CodeGenerateableWithAsyncModuleInfo(Vc<Box<dyn CodeGenerateableWithAsyncModuleInfo>>),
 }
 
 #[turbo_tasks::value(transparent)]
