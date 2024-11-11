@@ -137,7 +137,7 @@ impl ChunkItem for WorkerLoaderChunkItem {
 
     #[turbo_tasks::function]
     fn chunking_context(&self) -> Vc<Box<dyn ChunkingContext>> {
-        Vc::upcast(self.chunking_context)
+        *ResolvedVc::upcast(self.chunking_context)
     }
 
     #[turbo_tasks::function]
@@ -149,6 +149,6 @@ impl ChunkItem for WorkerLoaderChunkItem {
 
     #[turbo_tasks::function]
     fn module(&self) -> Vc<Box<dyn Module>> {
-        Vc::upcast(self.module)
+        *ResolvedVc::upcast(self.module)
     }
 }
