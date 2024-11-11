@@ -713,7 +713,7 @@ pub(crate) async fn analyse_ecmascript_module_internal(
                     runtime,
                     transforms,
                 }
-                .cell(),
+                .resolved_cell(),
             );
 
             if webpack_entry {
@@ -723,7 +723,7 @@ pub(crate) async fn analyse_ecmascript_module_internal(
                         runtime,
                         transforms,
                     }
-                    .cell(),
+                    .resolved_cell(),
                 );
             }
 
@@ -734,7 +734,7 @@ pub(crate) async fn analyse_ecmascript_module_internal(
                         runtime,
                         transforms,
                     }
-                    .cell(),
+                    .resolved_cell(),
                 );
             }
         }
