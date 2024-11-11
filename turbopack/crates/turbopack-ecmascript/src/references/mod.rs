@@ -2270,7 +2270,7 @@ async fn analyze_amd_define(
                 origin,
                 ResolvedVc::cell(ast_path.to_vec()),
                 AmdDefineFactoryType::Function,
-                issue_source(source, span).to_resolved().await?,
+                issue_source(source, span),
                 in_try,
             ));
         }
@@ -2284,7 +2284,7 @@ async fn analyze_amd_define(
                 origin,
                 ResolvedVc::cell(ast_path.to_vec()),
                 AmdDefineFactoryType::Unknown,
-                issue_source(source, span).to_resolved().await?,
+                issue_source(source, span),
                 in_try,
             ));
         }
@@ -2298,17 +2298,17 @@ async fn analyze_amd_define(
                 origin,
                 ResolvedVc::cell(ast_path.to_vec()),
                 AmdDefineFactoryType::Function,
-                issue_source(source, span).to_resolved().await?,
+                issue_source(source, span),
                 in_try,
             ));
         }
         [JsValue::Object { .. }] => {
             analysis.add_code_gen(AmdDefineWithDependenciesCodeGen::new(
                 vec![],
-                *origin,
+                origin,
                 ResolvedVc::cell(ast_path.to_vec()),
                 AmdDefineFactoryType::Value,
-                issue_source(source, span).to_resolved().await?,
+                issue_source(source, span),
                 in_try,
             ));
         }
@@ -2322,7 +2322,7 @@ async fn analyze_amd_define(
                 origin,
                 ResolvedVc::cell(ast_path.to_vec()),
                 AmdDefineFactoryType::Unknown,
-                issue_source(source, span).to_resolved().await?,
+                issue_source(source, span),
                 in_try,
             ));
         }
