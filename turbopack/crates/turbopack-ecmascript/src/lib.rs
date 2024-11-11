@@ -393,7 +393,7 @@ impl EcmascriptAnalyzable for EcmascriptModuleAsset {
             *analyze.references,
             *analyze.code_generation,
             *analyze.async_module,
-            *analyze.source_map,
+            analyze.source_map,
             *analyze.exports,
             async_module_info,
         ))
