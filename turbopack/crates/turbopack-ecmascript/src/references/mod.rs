@@ -1591,7 +1591,7 @@ async fn handle_call<G: Fn(Vec<Effect>) + Send + Sync>(
                 }
                 analysis.add_reference(
                     CjsRequireResolveAssetReference::new(
-                        origin,
+                        *origin,
                         Request::parse(Value::new(pat)),
                         Vc::cell(ast_path.to_vec()),
                         issue_source(*source, span),
@@ -1634,13 +1634,13 @@ async fn handle_call<G: Fn(Vec<Effect>) + Send + Sync>(
 
             analysis.add_reference(
                 RequireContextAssetReference::new(
-                    source,
-                    origin,
+                    *source,
+                    *origin,
                     options.dir,
                     options.include_subdirs,
                     Vc::cell(options.filter),
                     Vc::cell(ast_path.to_vec()),
-                    Some(issue_source(source, span)),
+                    Some(issue_source(*source, span)),
                     in_try,
                 )
                 .to_resolved()
