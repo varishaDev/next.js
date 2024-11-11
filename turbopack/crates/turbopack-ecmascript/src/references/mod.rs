@@ -1558,13 +1558,16 @@ async fn handle_call<G: Fn(Vec<Effect>) + Send + Sync>(
                         return Ok(());
                     }
                 }
-                analysis.add_reference(CjsRequireResolveAssetReference::new(
-                    origin,
-                    Request::parse(Value::new(pat)),
-                    Vc::cell(ast_path.to_vec()),
-                    issue_source(source, span),
-                    in_try,
-                ));
+                analysis
+                    .add_reference(CjsRequireResolveAssetReference::new(
+                        origin,
+                        Request::parse(Value::new(pat)),
+                        Vc::cell(ast_path.to_vec()),
+                        issue_source(source, span),
+                        in_try,
+                    ))
+                    .to_resolved()
+                    .await?;
                 return Ok(());
             }
             let (args, hints) = explain_args(&args);
@@ -1933,10 +1936,13 @@ async fn handle_call<G: Fn(Vec<Effect>) + Send + Sync>(
                                         .await?;
                                     js_value_to_pattern(&linked_func_call)
                                 };
-                                analysis.add_reference(DirAssetReference::new(
-                                    source,
-                                    Pattern::new(abs_pattern),
-                                ));
+                                analysis
+                                    .add_reference(DirAssetReference::new(
+                                        source,
+                                        Pattern::new(abs_pattern),
+                                    ))
+                                    .to_resolved()
+                                    .await?;
                                 return Ok(());
                             }
                         }
@@ -1944,12 +1950,16 @@ async fn handle_call<G: Fn(Vec<Effect>) + Send + Sync>(
                             if let Some(pkg) = pkg_or_dir.as_str() {
                                 if pkg != "html" {
                                     let pat = js_value_to_pattern(pkg_or_dir);
-                                    analysis.add_reference(CjsAssetReference::new(
-                                        origin,
-                                        Request::parse(Value::new(pat)),
-                                        issue_source(source, span),
-                                        in_try,
-                                    ));
+                                    analysis.add_reference(
+                                        CjsAssetReference::new(
+                                            origin,
+                                            Request::parse(Value::new(pat)),
+                                            issue_source(source, span),
+                                            in_try,
+                                        )
+                                        .to_resolved()
+                                        .await?,
+                                    );
                                 }
                                 return Ok(());
                             }
