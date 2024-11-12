@@ -237,6 +237,7 @@ async function collectNamedSlots(layoutPath: string) {
 // possible to provide the same experience for dynamic routes.
 
 const pluginState = getProxiedPluginState({
+  collectedRootParams: {} as Record<string, string[]>,
   routeTypes: {
     edge: {
       static: '',
@@ -584,6 +585,67 @@ function formatTimespanWithSeconds(seconds: undefined | number): string {
   return text + ' (' + descriptive + ')'
 }
 
+function getRootParamsFromLayouts(layoutsMap: Record<string, string[]>) {
+  let shortestLayoutLength = Infinity
+  const rootLayouts: { route: string; params: string[] }[] = []
+  const allRootParams = new Set<string>()
+
+  const layoutEntries = Object.entries(layoutsMap).sort(
+    ([a], [b]) => b.length - a.length
+  )
+
+  for (const [route, params] of layoutEntries) {
+    const segments = route.split('/')
+    if (segments.length <= shortestLayoutLength) {
+      if (segments.length < shortestLayoutLength) {
+        rootLayouts.length = 0 // Clear previous layouts if we found a shorter one
+        shortestLayoutLength = segments.length
+      }
+      rootLayouts.push({ route, params })
+      params.forEach((param) => allRootParams.add(param))
+    }
+  }
+
+  const result = Array.from(allRootParams).map((param) => ({
+    param,
+    // if we detected multiple root layouts and not all of them have the param,
+    // then it needs to be marked optional in the type.
+    optional: !rootLayouts.every((layout) => layout.params.includes(param)),
+  }))
+
+  return result
+}
+
+function createServerDefinitions(
+  rootParams: { param: string; optional: boolean }[]
+) {
+  return `
+  declare module 'next/server' {
+
+    import type { AsyncLocalStorage as NodeAsyncLocalStorage } from 'async_hooks'
+    declare global {
+      var AsyncLocalStorage: typeof NodeAsyncLocalStorage
+    }
+    export { NextFetchEvent } from 'next/dist/server/web/spec-extension/fetch-event'
+    export { NextRequest } from 'next/dist/server/web/spec-extension/request'
+    export { NextResponse } from 'next/dist/server/web/spec-extension/response'
+    export { NextMiddleware, MiddlewareConfig } from 'next/dist/server/web/types'
+    export { userAgentFromString } from 'next/dist/server/web/spec-extension/user-agent'
+    export { userAgent } from 'next/dist/server/web/spec-extension/user-agent'
+    export { URLPattern } from 'next/dist/compiled/@edge-runtime/primitives/url'
+    export { ImageResponse } from 'next/dist/server/web/spec-extension/image-response'
+    export type { ImageResponseOptions } from 'next/dist/compiled/@vercel/og/types'
+    export { unstable_after } from 'next/dist/server/after'
+    export { connection } from 'next/dist/server/request/connection'
+    export type { UnsafeUnwrappedSearchParams } from 'next/dist/server/request/search-params'
+    export type { UnsafeUnwrappedParams } from 'next/dist/server/request/params'
+    export function unstable_rootParams(): Promise<{ ${rootParams
+      .map(({ param, optional }) => `${param}${optional ? '?' : ''}: string`)
+      .join(', ')} }>
+  }
+  `
+}
+
 function createCustomCacheLifeDefinitions(cacheLife: {
   [profile: string]: CacheLife
 }) {
@@ -855,6 +917,22 @@ export class NextTypesPlugin {
       if (!IS_IMPORTABLE) return
 
       if (IS_LAYOUT) {
+        const rootLayoutPath = normalizeAppPath(
+          ensureLeadingSlash(
+            getPageFromPath(
+              path.relative(this.appDir, mod.resource),
+              this.pageExtensions
+            )
+          )
+        )
+
+        const foundParams = Array.from(
+          rootLayoutPath.matchAll(/\[(.*?)\]/g),
+          (match) => match[1]
+        )
+
+        pluginState.collectedRootParams[rootLayoutPath] = foundParams
+
         const slots = await collectNamedSlots(mod.resource)
         assets[assetPath] = new sources.RawSource(
           createTypeGuardFile(mod.resource, relativeImportPath, {
@@ -932,6 +1010,22 @@ export class NextTypesPlugin {
           })
 
           await Promise.all(promises)
+
+          const rootParams = getRootParamsFromLayouts(
+            pluginState.collectedRootParams
+          )
+          // If we discovered rootParams, we'll override the `next/server` types
+          // since we're able to determine the root params at build time.
+          if (rootParams.length > 0) {
+            const serverTypesPath = path.join(
+              assetDirRelative,
+              'types/server.d.ts'
+            )
+
+            assets[serverTypesPath] = new sources.RawSource(
+              createServerDefinitions(rootParams)
+            ) as unknown as webpack.sources.RawSource
+          }
 
           // Support `"moduleResolution": "Node16" | "NodeNext"` with `"type": "module"`
 
