@@ -220,12 +220,12 @@ async fn handle_declared_export(
                     .await?
                 {
                     return Ok(ControlFlow::Break(FollowExportsResult {
-                        module,
+                        module: *module,
                         export_name: Some(name.clone()),
                         ty: FoundExportType::SideEffects,
                     }));
                 }
-                return Ok(ControlFlow::Continue((module, name.clone())));
+                return Ok(ControlFlow::Continue((*module, name.clone())));
             }
         }
         EsmExport::ImportedNamespace(reference) => {
@@ -233,7 +233,7 @@ async fn handle_declared_export(
                 *ReferencedAsset::from_resolve_result(reference.resolve_reference()).await?
             {
                 return Ok(ControlFlow::Break(FollowExportsResult {
-                    module: m,
+                    module: *m,
                     export_name: None,
                     ty: FoundExportType::Found,
                 }));
@@ -292,7 +292,7 @@ async fn get_all_export_names(
                 if let ReferencedAsset::Some(m) =
                     *ReferencedAsset::from_resolve_result(esm_ref.resolve_reference()).await?
                 {
-                    Some(get_all_export_names(m))
+                    Some(get_all_export_names(*m))
                 } else {
                     None
                 },
@@ -343,8 +343,8 @@ pub async fn expand_star_exports(
                     if let ReferencedAsset::Some(asset) =
                         &*ReferencedAsset::from_resolve_result(esm_ref.resolve_reference()).await?
                     {
-                        if checked_modules.insert(*asset) {
-                            queue.push((*asset, asset.get_exports()));
+                        if checked_modules.insert(**asset) {
+                            queue.push((**asset, asset.get_exports()));
                         }
                     }
                 }
@@ -446,7 +446,7 @@ impl EsmExports {
                 continue;
             };
 
-            let export_info = expand_star_exports(*asset).await?;
+            let export_info = expand_star_exports(**asset).await?;
 
             for export in &export_info.star_exports {
                 if !exports.contains_key(export) {
