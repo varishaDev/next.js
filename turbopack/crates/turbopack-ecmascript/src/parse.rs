@@ -154,7 +154,7 @@ impl SourceMapGenConfig for InlineSourcesContentConfig {
 
 #[turbo_tasks::function]
 pub async fn parse(
-    source: Vc<Box<dyn Source>>,
+    source: ResolvedVc<Box<dyn Source>>,
     ty: Value<EcmascriptModuleAssetType>,
     transforms: Vc<EcmascriptInputTransforms>,
 ) -> Result<Vc<ParseResult>> {
@@ -173,7 +173,7 @@ pub async fn parse(
 }
 
 async fn parse_internal(
-    source: Vc<Box<dyn Source>>,
+    source: ResolvedVc<Box<dyn Source>>,
     ty: Value<EcmascriptModuleAssetType>,
     transforms: Vc<EcmascriptInputTransforms>,
 ) -> Result<Vc<ParseResult>> {
@@ -188,7 +188,7 @@ async fn parse_internal(
         Err(error) => {
             let error: RcStr = PrettyPrintError(&error).to_string().into();
             ReadSourceIssue {
-                source: source.to_resolved().await?,
+                source,
                 error: error.clone(),
             }
             .cell()
@@ -212,7 +212,7 @@ async fn parse_internal(
                         fs_path,
                         ident,
                         file_path_hash,
-                        source,
+                        *source,
                         ty,
                         transforms,
                     )
@@ -230,7 +230,7 @@ async fn parse_internal(
                 Err(error) => {
                     let error: RcStr = PrettyPrintError(&error).to_string().into();
                     ReadSourceIssue {
-                        source: source.to_resolved().await?,
+                        source,
                         error: error.clone(),
                     }
                     .cell()
