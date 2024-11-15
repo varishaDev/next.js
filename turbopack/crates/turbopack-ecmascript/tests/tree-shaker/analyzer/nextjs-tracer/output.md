@@ -801,9 +801,6 @@ export { ROOT_CONTEXT as l } from "__TURBOPACK_VAR__" assert {
 import { i as context } from "__TURBOPACK_PART__" assert {
     __turbopack_part__: -11
 };
-import { j as propagation } from "__TURBOPACK_PART__" assert {
-    __turbopack_part__: -11
-};
 import { h as api } from "__TURBOPACK_PART__" assert {
     __turbopack_part__: -9
 };
@@ -814,16 +811,10 @@ import "__TURBOPACK_PART__" assert {
     __turbopack_part__: 6
 };
 import { LogSpanAllowList } from './constants';
-import { l as ROOT_CONTEXT } from "__TURBOPACK_PART__" assert {
-    __turbopack_part__: -11
-};
 import "__TURBOPACK_PART__" assert {
     __turbopack_part__: 6
 };
 import { NextVanillaSpanAllowlist } from './constants';
-import { k as trace } from "__TURBOPACK_PART__" assert {
-    __turbopack_part__: -11
-};
 import "__TURBOPACK_PART__" assert {
     __turbopack_part__: 13
 };
@@ -1260,9 +1251,6 @@ export { ROOT_CONTEXT as l } from "__TURBOPACK_VAR__" assert {
 import { i as context } from "__TURBOPACK_PART__" assert {
     __turbopack_part__: -11
 };
-import { j as propagation } from "__TURBOPACK_PART__" assert {
-    __turbopack_part__: -11
-};
 import { h as api } from "__TURBOPACK_PART__" assert {
     __turbopack_part__: -9
 };
@@ -1273,16 +1261,10 @@ import "__TURBOPACK_PART__" assert {
     __turbopack_part__: 6
 };
 import { LogSpanAllowList } from './constants';
-import { l as ROOT_CONTEXT } from "__TURBOPACK_PART__" assert {
-    __turbopack_part__: -11
-};
 import "__TURBOPACK_PART__" assert {
     __turbopack_part__: 6
 };
 import { NextVanillaSpanAllowlist } from './constants';
-import { k as trace } from "__TURBOPACK_PART__" assert {
-    __turbopack_part__: -11
-};
 import "__TURBOPACK_PART__" assert {
     __turbopack_part__: 10
 };
