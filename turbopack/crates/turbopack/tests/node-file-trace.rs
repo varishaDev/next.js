@@ -30,7 +30,8 @@ use rstest_reuse::{
 use serde::{Deserialize, Serialize};
 use tokio::{process::Command, time::timeout};
 use turbo_tasks::{
-    backend::Backend, RcStr, ReadRef, ResolvedVc, TurboTasks, Value, ValueToString, Vc,
+    apply_effects, backend::Backend, RcStr, ReadRef, ResolvedVc, TurboTasks, Value, ValueToString,
+    Vc,
 };
 use turbo_tasks_fs::{DiskFileSystem, FileSystem, FileSystemPath};
 use turbo_tasks_memory::MemoryBackend;
@@ -463,7 +464,9 @@ fn node_file_trace<B: Backend + 'static>(
 
                 print_graph(ResolvedVc::upcast(rebased)).await?;
 
-                emit_with_completion(*ResolvedVc::upcast(rebased), output_dir).await?;
+                let emit = emit_with_completion(*ResolvedVc::upcast(rebased), output_dir);
+                emit.strongly_consistent().await?;
+                apply_effects(emit).await?;
 
                 #[cfg(not(feature = "bench_against_node_nft"))]
                 {
