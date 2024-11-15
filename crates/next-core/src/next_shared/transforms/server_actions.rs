@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use anyhow::Result;
 use async_trait::async_trait;
 use next_custom_transforms::transforms::server_actions::{server_actions, Config};
@@ -53,7 +55,12 @@ impl CustomTransformer for NextServerActions {
                 is_react_server_layer: matches!(self.transform, ActionsTransform::Server),
                 dynamic_io_enabled: self.dynamic_io_enabled,
                 hash_salt: "".into(),
-                cache_kinds: self.cache_kinds.await?.clone_value(),
+                cache_kinds: self
+                    .cache_kinds
+                    .await?
+                    .iter()
+                    .map(|cache_kind| Arc::from(cache_kind.clone().into_owned()))
+                    .collect(),
             },
             ctx.comments.clone(),
         );
