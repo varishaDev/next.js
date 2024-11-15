@@ -1,4 +1,4 @@
-use std::{iter::FromIterator, path::PathBuf, sync::Arc};
+use std::{iter::FromIterator, path::PathBuf};
 
 use next_custom_transforms::transforms::{
     disallow_re_export_all_in_page::disallow_re_export_all_in_page,
@@ -286,7 +286,7 @@ fn use_cache_not_allowed(input: PathBuf) {
                         is_react_server_layer: true,
                         dynamic_io_enabled: false,
                         hash_salt: "".into(),
-                        cache_kinds: FxHashSet::from_iter([Arc::new("x".into())]),
+                        cache_kinds: FxHashSet::from_iter(["x".into()]),
                     },
                     tr.comments.as_ref().clone(),
                 ),

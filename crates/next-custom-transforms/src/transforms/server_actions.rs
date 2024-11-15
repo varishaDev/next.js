@@ -2,7 +2,6 @@ use std::{
     collections::{BTreeMap, HashSet},
     convert::{TryFrom, TryInto},
     mem::take,
-    sync::Arc,
 };
 
 use hex::encode as hex_encode;
@@ -31,7 +30,7 @@ pub struct Config {
     pub is_react_server_layer: bool,
     pub dynamic_io_enabled: bool,
     pub hash_salt: String,
-    pub cache_kinds: FxHashSet<Arc<String>>,
+    pub cache_kinds: FxHashSet<String>,
 }
 
 enum DirectiveLocation {
@@ -70,7 +69,7 @@ enum ServerActionsErrorKind {
     },
     UnknownCacheKind {
         span: Span,
-        cache_kind: Arc<String>,
+        cache_kind: String,
     },
     UseCacheWithoutDynamicIO {
         span: Span,
@@ -89,7 +88,7 @@ pub type ActionsMap = BTreeMap<String, String>;
 // Directive-level information about a function body
 struct BodyInfo {
     is_action_fn: bool,
-    cache_kind: Option<Arc<String>>,
+    cache_kind: Option<String>,
 }
 
 #[tracing::instrument(level = tracing::Level::TRACE, skip_all)]
@@ -150,7 +149,7 @@ struct ServerActions<C: Comments> {
 
     start_pos: BytePos,
     in_action_file: bool,
-    file_cache_kind: Option<Arc<String>>,
+    file_cache_kind: Option<String>,
     in_exported_expr: bool,
     in_default_export_decl: bool,
     in_callee: bool,
@@ -2370,7 +2369,7 @@ fn detect_similar_strings(a: &str, b: &str) -> bool {
 fn remove_server_directive_index_in_module(
     stmts: &mut Vec<ModuleItem>,
     in_action_file: &mut bool,
-    file_cache_kind: &mut Option<Arc<String>>,
+    file_cache_kind: &mut Option<String>,
     has_action: &mut bool,
     has_cache: &mut bool,
     config: &Config,
@@ -2407,11 +2406,11 @@ fn remove_server_directive_index_in_module(
                         }
 
                         if value == "use cache" {
-                            *file_cache_kind = Some(Arc::new("default".into()));
+                            *file_cache_kind = Some("default".into());
                         } else {
                             // Slice the value after "use cache: "
                             let cache_kind_str =
-                                Arc::new(value.split_at("use cache: ".len()).1.into());
+                                String::from(value.split_at("use cache: ".len()).1);
 
                             if !config.cache_kinds.contains(&cache_kind_str) {
                                 emit_error(ServerActionsErrorKind::UnknownCacheKind {
@@ -2521,7 +2520,7 @@ fn has_body_directive(maybe_body: &Option<BlockStmt>) -> (bool, bool) {
 fn remove_server_directive_index_in_fn(
     stmts: &mut Vec<Stmt>,
     is_action_fn: &mut bool,
-    cache_kind: &mut Option<Arc<String>>,
+    cache_kind: &mut Option<String>,
     action_span: &mut Option<Span>,
     config: &Config,
 ) {
@@ -2563,10 +2562,10 @@ fn remove_server_directive_index_in_fn(
                     }
 
                     if value == "use cache" {
-                        *cache_kind = Some(Arc::new("default".into()));
+                        *cache_kind = Some("default".into());
                     } else {
                         // Slice the value after "use cache: "
-                        let cache_kind_str = Arc::new(value.split_at("use cache: ".len()).1.into());
+                        let cache_kind_str = String::from(value.split_at("use cache: ".len()).1);
 
                         if !config.cache_kinds.contains(&cache_kind_str) {
                             emit_error(ServerActionsErrorKind::UnknownCacheKind {

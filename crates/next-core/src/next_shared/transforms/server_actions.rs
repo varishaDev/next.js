@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use anyhow::Result;
 use async_trait::async_trait;
 use next_custom_transforms::transforms::server_actions::{server_actions, Config};
@@ -59,7 +57,7 @@ impl CustomTransformer for NextServerActions {
                     .cache_kinds
                     .await?
                     .iter()
-                    .map(|cache_kind| Arc::from(cache_kind.clone().into_owned()))
+                    .map(|cache_kind| cache_kind.clone().into_owned())
                     .collect(),
             },
             ctx.comments.clone(),
