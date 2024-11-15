@@ -4083,7 +4083,6 @@ dependencies = [
  "swc_relay",
  "testing",
  "tracing",
- "turbo-tasks",
  "turbopack-ecmascript-plugins",
  "walkdir",
 ]

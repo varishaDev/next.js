@@ -2,6 +2,7 @@ use std::{
     env::current_dir,
     iter::FromIterator,
     path::{Path, PathBuf},
+    sync::Arc,
 };
 
 use next_custom_transforms::transforms::{
@@ -418,7 +419,7 @@ fn server_actions_server_fixture(input: PathBuf) {
                         is_react_server_layer: true,
                         dynamic_io_enabled: true,
                         hash_salt: "".into(),
-                        cache_kinds: FxHashSet::from_iter(["x".into()]),
+                        cache_kinds: FxHashSet::from_iter([Arc::new("x".into())]),
                     },
                     _tr.comments.as_ref().clone(),
                 ),
