@@ -7,7 +7,8 @@ use std::{
 
 use anyhow::{bail, Context, Result};
 use turbo_tasks::{
-    RcStr, ReadConsistency, ResolvedVc, TransientInstance, TryJoinIterExt, TurboTasks, Value, Vc,
+    apply_effects, RcStr, ReadConsistency, ResolvedVc, TransientInstance, TryJoinIterExt,
+    TurboTasks, Value, Vc,
 };
 use turbo_tasks_fs::FileSystem;
 use turbo_tasks_memory::MemoryBackend;
@@ -127,7 +128,9 @@ impl TurbopackBuildBuilder {
             );
 
             // Await the result to propagate any errors.
-            build_result.await?;
+            build_result.strongly_consistent().await?;
+
+            apply_effects(build_result).await?;
 
             let issue_reporter: Vc<Box<dyn IssueReporter>> =
                 Vc::upcast(ConsoleUi::new(TransientInstance::new(LogOptions {

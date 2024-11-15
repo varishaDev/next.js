@@ -23,7 +23,7 @@ use rand::Rng;
 use tokio::{io::AsyncWriteExt, time::Instant};
 use tracing::Instrument;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter, Registry};
-use turbo_tasks::{Completion, RcStr, ReadRef, TransientInstance, UpdateInfo, Vc};
+use turbo_tasks::{apply_effects, Completion, RcStr, ReadRef, TransientInstance, UpdateInfo, Vc};
 use turbo_tasks_fs::{
     util::uri_from_file, DiskFileSystem, FileContent, FileSystem, FileSystemPath,
 };
@@ -630,6 +630,7 @@ async fn get_entrypoints_with_issues(
 ) -> Result<Vc<EntrypointsWithIssues>> {
     let entrypoints_operation = container.entrypoints();
     let entrypoints = entrypoints_operation.strongly_consistent().await?;
+    apply_effects(entrypoints_operation).await?;
     let issues = get_issues(entrypoints_operation).await?;
     let diagnostics = get_diagnostics(entrypoints_operation).await?;
     Ok(EntrypointsWithIssues {
@@ -727,6 +728,7 @@ async fn hmr_update(
 ) -> Result<Vc<HmrUpdateWithIssues>> {
     let update_operation = project.hmr_update(identifier, state);
     let update = update_operation.strongly_consistent().await?;
+    apply_effects(update_operation).await?;
     let issues = get_issues(update_operation).await?;
     let diagnostics = get_diagnostics(update_operation).await?;
     Ok(HmrUpdateWithIssues {
@@ -839,6 +841,7 @@ async fn get_hmr_identifiers_with_issues(
 ) -> Result<Vc<HmrIdentifiersWithIssues>> {
     let hmr_identifiers_operation = container.hmr_identifiers();
     let hmr_identifiers = hmr_identifiers_operation.strongly_consistent().await?;
+    apply_effects(hmr_identifiers_operation).await?;
     let issues = get_issues(hmr_identifiers_operation).await?;
     let diagnostics = get_diagnostics(hmr_identifiers_operation).await?;
     Ok(HmrIdentifiersWithIssues {
